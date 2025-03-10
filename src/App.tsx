@@ -10,8 +10,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Login from "./pages/Login/LoginPage";
 import Home from "./pages/Home/HomePage";
 import Layout from "./components/layout/Layout";
-import { PublicContextProvider } from "./context/public/publicContext";
-import { PrivateContextProvider } from "./context/private/privateContext";
+import { PublicContextProvider } from "./context/public/PublicContext";
+import { PrivateContextProvider } from "./context/private/PrivateContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRoute from "./components/AuthRoute";
 
