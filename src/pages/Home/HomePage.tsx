@@ -6,7 +6,9 @@ import {
   HStack,
   Skeleton,
   Alert,
+  Input,
 } from "@chakra-ui/react"; // Importar componentes de Chakra UI
+import { InputGroup } from "@/components/ui/input-group"
 import { useMemo, useState } from "react";
 import {
   useReactTable,
@@ -25,13 +27,15 @@ import {
   PaginationPrevTrigger,
   PaginationRoot,
 } from "@/components/ui/pagination";
+import { LuSearch } from "react-icons/lu"
 
 const Home = () => {
-
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
+
+  const [globalFilter, setGlobalFilter] = useState(""); // Estado para el filtro global
 
   const { data, isLoading, isError } = useGetUsers();
 
@@ -62,18 +66,23 @@ const Home = () => {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
+    onGlobalFilterChange: (filterValue) => {
+      setGlobalFilter(filterValue); // Actualizar el filtro global
+      setPagination((prev) => ({ ...prev, pageIndex: 0 })); // Reiniciar el paginado
+    },
     state: {
       pagination,
+      globalFilter, // Añadir el filtro global al estado
     },
   });
 
   return (
     <Flex justifyContent="center" mt={["10px", "50px"]}>
-      <Box width="800px" overflowX="auto" >
+      <Box width="800px" overflowX="auto">
         {isError ? (
           // Mostrar alerta de error si hay un error
           <Alert.Root status="error" borderRadius="md">
-            <Alert.Indicator/>
+            <Alert.Indicator />
             <Alert.Title>
               No se pudieron cargar los datos. Por favor, inténtalo de nuevo más
               tarde.
@@ -87,6 +96,16 @@ const Home = () => {
           </Box>
         ) : (
           <>
+            {/* Input de búsqueda */}
+            <InputGroup mb={4}  startElement={<LuSearch />}>
+
+              <Input
+                placeholder="Buscar..."
+                value={globalFilter}
+                onChange={(e) => setGlobalFilter(e.target.value)} // Actualizar el filtro global
+              />
+            </InputGroup>
+
             <Table.Root size={["sm", "md"]}>
               <Table.Header>
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -136,7 +155,8 @@ const Home = () => {
             </Table.Root>
             <PaginationRoot
               page={pagination.pageIndex + 1}
-              count={data?.length || 0}
+              // count={data?.length || 0}
+              count={table.getFilteredRowModel().rows.length}
               pageSize={pagination.pageSize}
               onPageChange={(e) =>
                 setPagination({
